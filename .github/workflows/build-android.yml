@@ -1,0 +1,42 @@
+name: Build Agora Android Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Build both APKs
+        run: gradle assembleUserDebug assembleOwnerDebug
+
+      - name: Upload Agora APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Agora-Android
+          path: app/build/outputs/apk/user/debug/app-user-debug.apk
+
+      - name: Upload Agora Owner APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Agora-Owner-Android
+          path: app/build/outputs/apk/owner/debug/app-owner-debug.apk
